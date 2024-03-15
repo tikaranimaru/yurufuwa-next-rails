@@ -22,3 +22,8 @@ Things you may want to cover:
 * Deployment instructions
 
 * ...
+
+
+bin/rails g scaffold User name:string email:string password_digest:string
+bin/rails g scaffold timeline user_id:integer datetime:string content:string content:text
+bin/rails g controller admin/dashboard index

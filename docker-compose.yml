@@ -2,6 +2,7 @@ version: '3'
 services:
   # 参考: https://qiita.com/ucan-lab/items/b094dbfc12ac1cbee8cb
   mysql-db:
+    container_name: musql-db
     image: mysql:8.0
     volumes:
       - db-store:/var/lib/mysql
@@ -13,23 +14,37 @@ services:
       - TZ=Asia/Tokyo
     ports:
       - "3307:3306"
-  rails-api:
-    container_name: rails-api
+  rails:
+    container_name: rails
     build:
       context: ./backend
       dockerfile: Dockerfile.development
     volumes:
       - ./backend:/rails
     ports:
-      - "3000:3000"
+      - "8000:8000"
     depends_on:
       - mysql-db
+      - nextjs
     env_file: .env
     restart: always
     tty: true
     environment:
       - RAILS_ENV=development
     command: bin/dev
+  nextjs:
+    container_name: "nextjs"
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    command: [ "npm", "run", "dev" ]
+    ports:
+      - "3000:3000"
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./frontend:/frontend
+      - ./frontend/node_modules:/frontend/node_modules
 
 volumes:
   db-store:

@@ -23,5 +23,13 @@ module App
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins ['http://localhost:3000', 'http://127.0.0.1:3000']  # Next.jsアプリのホストを指定
+        resource '/api/*',  # 公開するAPIのパスを指定
+          headers: :any,
+          methods: [:get, :post, :put, :delete, :options]  # 許可するHTTPメソッド
+      end
+    end
   end
 end
