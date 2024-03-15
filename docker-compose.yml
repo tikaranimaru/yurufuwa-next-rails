@@ -1,0 +1,33 @@
+version: '3'
+services:
+  # 参考: https://qiita.com/ucan-lab/items/b094dbfc12ac1cbee8cb
+  mysql-db:
+    image: mysql:8.0
+    volumes:
+      - db-store:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASS}
+      - MYSQL_ROOT_PASSWORD=${DB_PASS}
+      - TZ=Asia/Tokyo
+    ports:
+      - "3307:3306"
+  rails-api:
+    container_name: rails-api
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.development
+    volumes:
+      - ./backend:/rails
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql-db
+    env_file: .env
+    environment:
+      - RAILS_ENV=development
+    command: "/bin/sh -c 'rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b 0.0.0.0'"
+
+volumes:
+  db-store:
